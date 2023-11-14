@@ -1,5 +1,5 @@
-# nmap2xslx
-Pyscript creates .xslx report from .nmap output
+# nmap2xlsx
+Pyscript creates .xlsx report from .nmap output
 
 ### Install requirements:
 ```python
