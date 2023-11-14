@@ -1,6 +1,7 @@
 # nmap_xslx
-From .nmap to xslx report
+Create .xslx report from .nmap output
 
+Install requirements:
 ```python
-pip install openpyxl argparse
+pip install -r requirements.txt
 ```
