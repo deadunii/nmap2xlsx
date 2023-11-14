@@ -1,7 +1,7 @@
-# nmap_xslx
-Create .xslx report from .nmap output
+## nmap2xslx
+Pyscript creates .xslx report from .nmap output
 
-Install requirements:
+#Install requirements:
 ```python
 pip install -r requirements.txt
 ```
