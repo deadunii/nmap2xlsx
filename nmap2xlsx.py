@@ -1,13 +1,15 @@
 import openpyxl
 import argparse
+import asyncio
+import aiofiles
 
-def extract_ip_addresses(filename):
+async def extract_ip_addresses(filename):
     ip_address_ports = {}
 
-    with open(filename, 'r') as file:
+    async with aiofiles.open(filename, 'r') as file:
         ip = ""
-        for line in file:
-            if line.startswith("Nmap scan report for ") and "[host down, received no-response]" not in line and "[host down, received host-unreach]" not in line:
+        async for line in file:
+            if line.startswith("Nmap scan report for ") and "[host down, received no-response]" not in line and "[host, down, received host-unreach]" not in line:
                 ip = line.split("Nmap scan report for ")[-1].replace('(', ',').replace(')','').strip()
             elif "open" in line and "Discovered" not in line and "tcp" in line:
                 if ip in ip_address_ports:
@@ -17,6 +19,7 @@ def extract_ip_addresses(filename):
 
     return ip_address_ports
 
+ 
 def write_to_excel(filename, ip_address_ports):
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -32,15 +35,24 @@ def write_to_excel(filename, ip_address_ports):
 
     wb.save(filename)
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('input_filename')
-    parser.add_argument('output_filename')
-    args = parser.parse_args()
-    input_filename = args.input_filename
-    output_filename = args.output_filename
+ 
+async def main(input_filenames, output_filename):
+     # Сбор результатов из всех файлов
+    results = {}
+    for filename in input_filenames:
+        ip_address_ports = await extract_ip_addresses(filename)
+        results.update(ip_address_ports)
 
-    ip_address_ports = extract_ip_addresses(input_filename)
-    write_to_excel(output_filename, ip_address_ports)
+
+    write_to_excel(output_filename, results)
 
     print("Успешно сохранено в файл ", output_filename)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Process multiple nmap files asynchronously and output results to an Excel file.')
+
+    parser.add_argument('input_filenames', nargs='+', help='Input file(s) containing nmap scan results')
+    parser.add_argument('output_filename', help='Output Excel file to write the results to')
+    args = parser.parse_args()
+
+    asyncio.run(main(args.input_filenames, args.output_filename))
