@@ -5,3 +5,7 @@ Pyscript creates .xlsx report from .nmap output
 ```python
 pip install -r requirements.txt
 ```
+### Usage:
+```python
+python3 nmap2xlsx.py input_file.txt output_file.txt
+```
